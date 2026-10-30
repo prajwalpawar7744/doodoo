@@ -8,7 +8,7 @@ doodoo is a multiplayer Pictionary game. This repo holds the frontend in `client
 
 - React 19 + Vite, plain JavaScript (`.jsx`), no TypeScript.
 - Styling: Tailwind CSS v4 utilities only; theme tokens live in `@theme` in `src/index.css`. No separate component CSS files.
-- Fonts: Fredoka via `font-display` for headings.
+- Fonts: Bagel Fat One via `font-display` for headings, Nunito for body; both self-hosted with `@fontsource`.
 - Icons: `lucide-react`. Conditional classes: `clsx`.
 - Dev server runs on port 3000 (`vite.config.js`).
 

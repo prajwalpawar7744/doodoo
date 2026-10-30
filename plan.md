@@ -17,6 +17,8 @@ Transport: **Socket.IO** (rooms, reconnection, acks built in).
 
 | Direction | Event | Payload |
 |---|---|---|
+| C→S (handshake) | connect with `auth: { nickname }` | 1–20 chars after trim; rejected with `connect_error` `bad_nickname` |
+| S→C | `auth:ok` | `{ id, nickname }` |
 | C→S | `room:create` | `{ name }` → ack `{ roomId }` |
 | C→S | `room:join` | `{ roomId, name }` |
 | S→C | `room:state` | `{ players: [{ id, name, score }], hostId, phase, round, maxRounds }` |
