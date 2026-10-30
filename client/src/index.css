@@ -1,10 +1,33 @@
-@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap");
 @import "tailwindcss";
 
 @theme {
+  /* Fonts */
   --font-display: "Fredoka", system-ui, sans-serif;
+  --font-sans: "Nunito", system-ui, sans-serif;
+
+  /* Surfaces */
+  --color-paper: #f7f3fc;
+  --color-surface: #ffffff;
+  --color-ink: #231a33;
+  --color-muted: #6e6283;
+  --color-line: #e4daf2;
+
+  /* Brand */
+  --color-brand: #9b7fd4;
+  --color-brand-hover: #8566c4;
+  --color-brand-soft: #e9e0f7;
+  --color-accent: #ffc83d;
+
+  /* Status */
+  --color-success: #2fb36d;
+  --color-danger: #e5484d;
+
+  /* Radius & shadow */
+  --radius-card: 1.25rem;
+  --shadow-pop: 0 4px 0 0 var(--color-ink);
 }
 
 body {
-  @apply bg-white text-zinc-900 antialiased;
+  @apply bg-paper font-sans text-ink antialiased;
 }
