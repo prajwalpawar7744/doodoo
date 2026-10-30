@@ -8,7 +8,8 @@ Pictionary game. Frontend lives in `client` (Vite + React 19, JavaScript). Backe
 - **Font:** Fredoka (Google Fonts) as `font-display` for headings and the word hint.
 - **Icons:** `lucide-react` (e.g. `Pencil`, `Eraser`, `Undo2`, `Trash2`, `Timer`, `Crown`, `Send`).
 - **Utilities:** `clsx` for conditional class names.
-- **Later:** `motion` for animations.
+- **Animation:** `motion` (Framer Motion).
+- **Riso components:** `src/components/riso/` (PaperGround, RisoText, StampButton, Doodles, InkFilters).
 
 ## Phase 0 — Event contract (agree with backend first)
 
@@ -36,14 +37,16 @@ The server owns the word, timer, and scoring. The client only renders them.
 
 ## Phase 1 — Foundations
 
-- Add `socket.io-client` and `react-router-dom`.
+- [x] `react-router-dom` added; routes `/` and `/name` in `src/App.jsx`.
+- Add `socket.io-client`.
 - `src/net/socket.js` — singleton socket, URL from `VITE_SERVER_URL`.
 - `src/state/GameContext.jsx` — `useReducer` store fed by `room:*` / `turn:*` events.
 - `mock-server/index.js` — small Socket.IO server implementing the contract so UI work isn't blocked. Swap to the real backend by changing the env var.
 
 ## Phase 2 — Screens
 
-1. **Home** (`/`) — enter name, create room or join by code.
+1. [x] **Home** (`/`) — riso title screen, "Hop in & doodle!" goes to `/name`.
+   [x] **Name** (`/name`) — enter name (2–16 chars, saved to localStorage), then Start a room / Join with code (not wired to the backend yet).
 2. **Lobby** (`/room/:id`) — player list, copy invite link, host settings, Start.
 3. **Game** (same route, switched on `phase`) — canvas, chat/guess input, scoreboard, timer, word hint, drawer's word picker.
 4. **Results** — round-end overlay and final leaderboard with "Play again".
