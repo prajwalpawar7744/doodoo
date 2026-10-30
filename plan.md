@@ -50,8 +50,8 @@ The server owns the word, timer, and scoring. The client only renders them.
 ## Phase 2 — Screens
 
 1. [x] **Home** (`/`) — riso title screen, "Hop in & doodle!" goes to `/name`.
-   [x] **Name** (`/name`) — enter name (2–16 chars, saved to localStorage), then Start a room / Join with code (not wired to the backend yet).
-2. **Lobby** (`/room/:id`) — player list, copy invite link, host settings, Start.
+   [x] **Name** (`/name`) — enter name (1–20 chars, logs in via `auth: { nickname }`), then Start a room (`room:create`) / Join with code (`room:join`).
+2. [~] **Lobby** (`/room/:id`) — room code with copy button and live player list from `room:state` done; host settings and Start pending.
 3. **Game** (same route, switched on `phase`) — canvas, chat/guess input, scoreboard, timer, word hint, drawer's word picker.
 4. **Results** — round-end overlay and final leaderboard with "Play again".
 

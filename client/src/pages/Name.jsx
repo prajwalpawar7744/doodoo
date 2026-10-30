@@ -1,11 +1,12 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useId, useState, useSyncExternalStore } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Squiggle } from "../components/riso/Doodles";
 import PaperGround from "../components/riso/PaperGround";
 import RisoText from "../components/riso/RisoText";
 import StampButton from "../components/riso/StampButton";
 import { load, save } from "../lib/storage";
+import { createRoom, joinRoom } from "../net/rooms";
 import { login } from "../net/socket";
 
 const NAME_KEY = "doodoo:name";
@@ -27,6 +28,8 @@ function Name() {
   const [step, setStep] = useState("name");
   const [code, setCode] = useState("");
   const [pending, setPending] = useState(false);
+  const [roomError, setRoomError] = useState(null);
+  const navigate = useNavigate();
   const narrow = useNarrow();
   const nameId = useId();
   const codeId = useId();
@@ -60,9 +63,27 @@ function Name() {
     }
   }
 
+  async function enterRoom(request) {
+    if (pending) return;
+    setRoomError(null);
+    setPending(true);
+    try {
+      const roomId = await request();
+      navigate(`/room/${roomId}`);
+    } catch (err) {
+      setRoomError(err.message);
+      setPending(false);
+    }
+  }
+
   function submitCode(e) {
     e.preventDefault();
-    if (code) setStep("soon");
+    if (code) enterRoom(() => joinRoom(code));
+  }
+
+  function goTo(next) {
+    setRoomError(null);
+    setStep(next);
   }
 
   return (
@@ -169,19 +190,25 @@ function Name() {
                 What now?
               </p>
               <Reveal>
-                <StampButton autoFocus onClick={() => setStep("soon")}>
-                  Start a room
+                <StampButton
+                  autoFocus
+                  disabled={pending}
+                  onClick={() => enterRoom(createRoom)}
+                >
+                  {pending ? "Making a room…" : "Start a room"}
                 </StampButton>
               </Reveal>
               <Reveal>
                 <StampButton
                   ink="yellow"
                   tilt={1.5}
-                  onClick={() => setStep("join")}
+                  disabled={pending}
+                  onClick={() => goTo("join")}
                 >
                   Join with code
                 </StampButton>
               </Reveal>
+              <ErrorNote message={roomError} />
             </motion.div>
           )}
 
@@ -208,7 +235,7 @@ function Name() {
                         e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""),
                       )
                     }
-                    maxLength={8}
+                    maxLength={6}
                     autoFocus
                     autoComplete="off"
                     spellCheck={false}
@@ -223,49 +250,22 @@ function Name() {
                   type="submit"
                   ink="yellow"
                   tilt={1.5}
-                  disabled={!code}
+                  disabled={!code || pending}
                 >
-                  Join
+                  {pending ? "Joining…" : "Join"}
                 </StampButton>
               </div>
+              <ErrorNote message={roomError} className="mt-3" />
               <button
                 type="button"
-                onClick={() => setStep("choose")}
-                className="mt-4 cursor-pointer font-bold text-muted underline underline-offset-4 hover:text-ink"
+                onClick={() => goTo("choose")}
+                className="mt-4 block cursor-pointer font-bold text-muted underline underline-offset-4 hover:text-ink"
               >
                 Back
               </button>
             </motion.form>
           )}
 
-          {step === "soon" && (
-            <motion.div
-              key="soon"
-              className="mt-6"
-              initial={{ opacity: 0, rotate: -3, scale: 0.95 }}
-              animate={{ opacity: 1, rotate: -1.5, scale: 1 }}
-              exit={{ opacity: 0, transition: { duration: 0.15 } }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            >
-              <p
-                role="status"
-                className="relative isolate inline-block px-4 py-2 text-lg font-bold"
-              >
-                <span
-                  aria-hidden="true"
-                  className="ink absolute inset-0 -z-10 bg-yellow"
-                />
-                Rooms are coming soon. Hang tight, {name}!
-              </p>
-              <button
-                type="button"
-                onClick={() => setStep("choose")}
-                className="mt-4 block cursor-pointer font-bold text-muted underline underline-offset-4 hover:text-ink"
-              >
-                Back
-              </button>
-            </motion.div>
-          )}
         </AnimatePresence>
       </div>
     </PaperGround>
@@ -281,6 +281,23 @@ function useNarrow() {
       return () => mq.removeEventListener("change", cb);
     },
     () => matchMedia("(max-width: 639px)").matches,
+  );
+}
+
+function ErrorNote({ message, className = "" }) {
+  return (
+    <p
+      role="alert"
+      className={`relative isolate inline-block font-bold text-violet ${message ? "px-3 py-1" : ""} ${className}`}
+    >
+      {message && (
+        <span
+          aria-hidden="true"
+          className="ink absolute inset-0 -z-10 -rotate-1 bg-yellow"
+        />
+      )}
+      {message}
+    </p>
   );
 }
 
