@@ -5,8 +5,8 @@ Each step is small, testable on its own, and ends with a manual check before the
 | # | Step | You can test by | Status |
 |---|---|---|---|
 | 1 | **Nickname login**: connect with `auth: { nickname }`, server validates (1–20 chars), replies `auth:ok {id, nickname}` or rejects with `bad_nickname` | Connect a client with a good and a bad nickname | done |
-| 2 | **Rooms**: `room:create {name}` -> ack `{roomId}`, `room:join {roomId, name}` with `not_found` / `full` / `bad_name` errors, `room:state` broadcast, player list, host assignment | Two clients: create, join, see both in `room:state` | next |
-| 3 | **Leaving & host handling**: disconnect removes a player, host passes on, empty rooms are deleted | Close a tab, watch `room:state` update | |
+| 2 | **Rooms**: `room:create {name}` -> ack `{roomId}`, `room:join {roomId, name}` with `not_found` / `full` / `bad_name` errors, `room:state` broadcast, player list, host assignment | Two clients: create, join, see both in `room:state` | done |
+| 3 | **Leaving & host handling**: disconnect removes a player, host passes on, empty rooms are deleted | Close a tab, watch `room:state` update | next |
 | 4 | **Game start**: `game:start {rounds, drawTime}` (host only, min 2 players), turn order, phases `lobby/choosing/drawing/turnEnd` | Host starts, phase changes in `room:state` | |
 | 5 | **Word choice**: `turn:choose` (drawer only) -> `turn:pick {word}`, auto-pick timeout, `turn:start {drawerId, wordLength, endsAt}`, `turn:word` to drawer | Drawer sees 3 words; others only see length | |
 | 6 | **Drawing relay**: `draw:stroke` / `draw:clear` / `draw:undo`, drawer-only, input validation, coords 0–1, rate limit | Draw in one tab, see it in another | |

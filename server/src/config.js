@@ -3,4 +3,6 @@ module.exports = {
   CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:3000',
   MIN_NAME_LEN: 1,
   MAX_NAME_LEN: 20,
+  MAX_PLAYERS: 12,
+  DEFAULT_ROUNDS: 3,
 };

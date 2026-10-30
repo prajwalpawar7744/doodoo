@@ -15,6 +15,8 @@ Pictionary game. Frontend lives in `client` (Vite + React 19, JavaScript). Backe
 
 Transport: **Socket.IO** (rooms, reconnection, acks built in).
 
+**Login (implemented in `server`):** the client connects with `io(url, { auth: { nickname } })`. The server trims the nickname (1–20 chars) and replies `auth:ok { id, nickname }`; an invalid nickname is rejected with a `connect_error` whose message is `bad_nickname`. `id` is the socket id for now. Backend steps are tracked in `server/ROADMAP.md`; `room:create`, `room:join` and `room:state` are implemented too; everything after them is the target contract and not built yet.
+
 | Direction | Event | Payload |
 |---|---|---|
 | C→S (handshake) | connect with `auth: { nickname }` | 1–20 chars after trim; rejected with `connect_error` `bad_nickname` |
