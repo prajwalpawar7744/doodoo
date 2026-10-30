@@ -1,33 +1,73 @@
-@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Nunito:wght@400;600;700;800&display=swap");
 @import "tailwindcss";
 
 @theme {
   /* Fonts */
-  --font-display: "Fredoka", system-ui, sans-serif;
+  --font-display: "Bagel Fat One", system-ui, sans-serif;
   --font-sans: "Nunito", system-ui, sans-serif;
 
-  /* Surfaces */
-  --color-paper: #f7f3fc;
+  /* Paper */
+  --color-paper: #fbfbf8;
   --color-surface: #ffffff;
-  --color-ink: #231a33;
-  --color-muted: #6e6283;
-  --color-line: #e4daf2;
 
-  /* Brand */
-  --color-brand: #9b7fd4;
-  --color-brand-hover: #8566c4;
-  --color-brand-soft: #e9e0f7;
-  --color-accent: #ffc83d;
+  /* Riso inks */
+  --color-violet: #6c4fa8;
+  --color-lilac: #a88fdc;
+  --color-lilac-soft: #ebe3f8;
+  --color-yellow: #ffe14a;
+  --color-overprint: #7a6a3e;
+
+  /* Text */
+  --color-ink: #2b1f45;
+  --color-muted: #6a5d86;
+  --color-line: #ddd2ef;
 
   /* Status */
-  --color-success: #2fb36d;
-  --color-danger: #e5484d;
+  --color-success: #2f8f5b;
+  --color-danger: #c8323c;
 
-  /* Radius & shadow */
+  /* Shape */
   --radius-card: 1.25rem;
-  --shadow-pop: 0 4px 0 0 var(--color-ink);
 }
 
-body {
-  @apply bg-paper font-sans text-ink antialiased;
+@layer base {
+  body {
+    @apply bg-paper font-sans text-ink antialiased;
+  }
+
+  ::selection {
+    background: var(--color-yellow);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-violet);
+    outline-offset: 4px;
+  }
+}
+
+@layer components {
+  /* Paper grain printed over the whole page */
+  .riso-grain::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.22;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.42 0 0 0 0 0.31 0 0 0 0 0.66 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Two-ink element: yellow layer printed under the violet, slightly off-register */
+  .riso-layers {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .riso-layers > .riso-under {
+    position: absolute;
+    inset: 0;
+    z-index: -20;
+    mix-blend-mode: multiply;
+  }
 }
