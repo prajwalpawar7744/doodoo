@@ -1,13 +1,13 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useId, useState, useSyncExternalStore } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Squiggle } from "../components/riso/Doodles";
 import PaperGround from "../components/riso/PaperGround";
 import RisoText from "../components/riso/RisoText";
 import StampButton from "../components/riso/StampButton";
 import { load, save } from "../lib/storage";
 import { createRoom, joinRoom } from "../net/rooms";
-import { login } from "../net/socket";
+import { login, socket } from "../net/socket";
 
 const NAME_KEY = "doodoo:name";
 const MIN = 1;
@@ -25,11 +25,13 @@ function Name() {
   const [name, setName] = useState(() => load(NAME_KEY) ?? "");
   const [error, setError] = useState(null);
   const [shake, setShake] = useState(0);
-  const [step, setStep] = useState("name");
+  // Still logged in (left or was removed from a room): skip straight to the choices
+  const [step, setStep] = useState(() => (socket.connected ? "choose" : "name"));
   const [code, setCode] = useState("");
   const [pending, setPending] = useState(false);
   const [roomError, setRoomError] = useState(null);
   const navigate = useNavigate();
+  const notice = useLocation().state?.notice;
   const narrow = useNarrow();
   const nameId = useId();
   const codeId = useId();
@@ -105,6 +107,7 @@ function Name() {
       </Link>
 
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center pb-[8vh]">
+        {notice && <ErrorNote message={notice} className="mb-8 self-start" />}
         <form onSubmit={submitName} noValidate>
           <h1>
             <label htmlFor={nameId} className="block">

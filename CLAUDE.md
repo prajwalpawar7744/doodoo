@@ -24,7 +24,7 @@ npm run lint
 
 - Node (CommonJS) + Express 5 + Socket.IO, plain JavaScript. State is in memory, no database; identity is a guest nickname, no accounts.
 - Listens on port 4000 (`PORT`); `CORS_ORIGIN` defaults to the client at `http://localhost:3000`.
-- Implemented so far: nickname login (`auth: { nickname }` on connect -> `auth:ok`, or `bad_nickname`) and rooms (`room:create`, `room:join`, `room:state`) in `main.js` + `src/rooms/RoomManager.js`. Disconnect handling (player removed, host passes to the next player, empty rooms deleted) is in too. Game logic and drawing are not built yet.
+- Implemented so far: nickname login (`auth: { nickname }` on connect -> `auth:ok`, or `bad_nickname`) and rooms (`room:create`, `room:join`, `room:state`) in `main.js` + `src/rooms/RoomManager.js`. Disconnect handling (player removed, host passes to the next player, empty rooms deleted) plus `room:leave` and host-only `room:kick` are in too. Game logic and drawing are not built yet.
 
 Commands (run inside `server`):
 

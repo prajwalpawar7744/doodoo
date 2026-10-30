@@ -61,11 +61,44 @@ function createServer() {
       io.to(room.id).emit('room:state', rooms.state(room));
     });
 
-    socket.on('disconnect', () => {
+    // Host only. The kicked player stays connected but is out of the room.
+    socket.on('room:kick', (payload, cb = noop) => {
+      if (typeof cb !== 'function') cb = noop;
       const room = rooms.get(socket.data.roomId);
-      if (!room) return;
-      if (!rooms.removePlayer(room, socket.id)) io.to(room.id).emit('room:state', rooms.state(room));
+      if (!room || room.hostId !== socket.id) return cb({ ok: false, error: 'not_host' });
+      const targetId = payload && payload.playerId;
+      if (targetId === socket.id) return cb({ ok: false, error: 'cannot_kick_self' });
+      if (!room.players.some((p) => p.id === targetId)) return cb({ ok: false, error: 'not_in_room' });
+
+      rooms.removePlayer(room, targetId);
+      const target = io.sockets.sockets.get(targetId);
+      if (target) {
+        target.leave(room.id);
+        target.data.roomId = null;
+        target.emit('room:kicked', {});
+      }
+      cb({ ok: true });
+      io.to(room.id).emit('room:state', rooms.state(room));
     });
+
+    // Takes this socket out of its room; returns false if it wasn't in one.
+    const leaveRoom = () => {
+      const room = rooms.get(socket.data.roomId);
+      if (!room) return false;
+      socket.leave(room.id);
+      socket.data.roomId = null;
+      if (!rooms.removePlayer(room, socket.id)) io.to(room.id).emit('room:state', rooms.state(room));
+      return true;
+    };
+
+    // Leave on purpose: stays connected and can create or join another room.
+    socket.on('room:leave', (...args) => {
+      // No payload needed, so the ack callback may arrive as the first argument
+      const cb = args.find((a) => typeof a === 'function') || noop;
+      cb(leaveRoom() ? { ok: true } : { ok: false, error: 'not_in_room' });
+    });
+
+    socket.on('disconnect', leaveRoom);
   });
 
   return { server, io };

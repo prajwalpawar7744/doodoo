@@ -24,6 +24,9 @@ Transport: **Socket.IO** (rooms, reconnection, acks built in).
 | C→S | `room:create` | `{ name }` → ack `{ roomId }` |
 | C→S | `room:join` | `{ roomId, name }` |
 | S→C | `room:state` | `{ players: [{ id, name, score }], hostId, phase, round, maxRounds }` |
+| C→S | `room:leave` | no payload → ack `{ ok: true }` or `{ ok: false, error: "not_in_room" }`. Player stays connected; host passes on, empty rooms are deleted, `room:state` to the rest; implemented |
+| C→S | `room:kick` | `{ playerId }` → ack `{ ok: true }` or `{ ok: false, error: "not_host" \| "cannot_kick_self" \| "not_in_room" }`. Host only; implemented |
+| S→C (kicked player) | `room:kicked` | `{}`. Sent to the removed player (who stays connected), then `room:state` to the rest; implemented |
 | C→S | `game:start` | `{ rounds, drawTime }` (host only) |
 | S→C | `turn:start` | `{ drawerId, wordLength, endsAt }` |
 | S→C (drawer only) | `turn:choose` | `{ options: [] }` |
