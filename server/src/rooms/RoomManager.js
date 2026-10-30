@@ -34,6 +34,18 @@ class RoomManager {
     return null;
   }
 
+  // Removes a player; the next player in join order becomes host if the host left.
+  // Deletes the room when it empties. Returns true if the room was deleted.
+  removePlayer(room, id) {
+    room.players = room.players.filter((p) => p.id !== id);
+    if (room.players.length === 0) {
+      this.rooms.delete(room.id);
+      return true;
+    }
+    if (room.hostId === id) room.hostId = room.players[0].id;
+    return false;
+  }
+
   state(room) {
     const { players, hostId, phase, round, maxRounds } = room;
     return { players, hostId, phase, round, maxRounds };

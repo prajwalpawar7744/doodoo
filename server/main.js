@@ -60,6 +60,12 @@ function createServer() {
       cb({ ok: true, roomId: room.id });
       io.to(room.id).emit('room:state', rooms.state(room));
     });
+
+    socket.on('disconnect', () => {
+      const room = rooms.get(socket.data.roomId);
+      if (!room) return;
+      if (!rooms.removePlayer(room, socket.id)) io.to(room.id).emit('room:state', rooms.state(room));
+    });
   });
 
   return { server, io };
